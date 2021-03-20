@@ -13,7 +13,9 @@
     "postcss": "^7.0.35",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3",
     "vue": "^2.6.11",
+    "vue-feather-icons": "^5.1.0",
     "vue-router": "^3.5.1",
+    "vue-trend-chart": "^0.15.3",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

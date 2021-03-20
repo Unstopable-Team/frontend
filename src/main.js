@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
+//https://github.com/dmtrbrl/vue-trend-chart
+import TrendChart from "vue-trend-chart";
 
 import VueRouter from 'vue-router'
 //Data store
@@ -11,6 +13,7 @@ import Homepage from "./views/HomePage";
 import LoginPage from './views/LoginPage.vue'
 
 Vue.use(VueRouter);
+Vue.use(TrendChart);
 
 Vue.config.productionTip = false
 
