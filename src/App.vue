@@ -6,8 +6,17 @@
 
 <script>
 
+import constants from "@/constants";
+
 export default {
-  name: 'App'
+  name: 'App',
+  mounted() {
+    let self = this;
+    setInterval(function(){
+      console.log("Refreshing notifications")
+      self.$store.dispatch('getNewData')
+    }, constants.NOTIFICATIONS_REFRESH_RATE * 1000);
+  }
 }
 </script>
 

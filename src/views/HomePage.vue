@@ -28,7 +28,7 @@
       fill: true
     }
   ]" :grid="{ verticalLines: true, horizontalLines: false}"
-        :padding="0"
+        :padding="'0'"
         :interactive="true"
         :min="0">
     </TrendChart>
@@ -51,7 +51,13 @@
         </div>
 
         <EventNotification v-for="(notification, n) in futureNotifications" :key="'future_notf_'+n" :notification="notification"></EventNotification>
+
+        <div @click="send('notification', 'hello') ">SEND NOTIFICATION - SOCKET DATA</div>
+        <div @click="send('critical_notification', 'hello') ">SEND CRITICAL NOTIFICATION - SOCKET DATA</div>
+
       </div>
+
+
 
     </div>
   </div>
@@ -73,6 +79,17 @@ export default {
     },
     critical_notification: function (data) {
       console.log('Critical Notification: ',data)
+    }
+  },
+  mounted() {
+    if(this.$store.state.userToken===null) {
+      this.$router.push('login');
+    }
+  },
+  methods: {
+    send(eventName, data) {
+      console.log("sending",eventName,data)
+      this.$socket.emit(eventName, data)
     }
   },
   computed: {
