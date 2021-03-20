@@ -6,6 +6,11 @@ Vue.use(Vuex)
 import APIclient from "../services/apiClient"
 import constants from "../constants";
 
+function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
 const store = new Vuex.Store({
     state: {
         userToken: null,
@@ -30,9 +35,15 @@ const store = new Vuex.Store({
         setSuccessMessage(state, successMessage) {
             state.successMessage = successMessage;
         },
-
     },
     actions: {
+        dispatchErrorMessage(context, data) {
+            context.commit('setErrorMessage',data);
+            window.setTimeout(function() {
+                console.log("remove message")
+                context.commit('setErrorMessage',null);
+            }, 2500);
+        },
         getNewData(context) {
             if(context.state.userToken!=null) {
                 APIclient.post('/notifications', {})
@@ -50,21 +61,36 @@ const store = new Vuex.Store({
         loginUser(context, data) {
             //data.username
             //data.password
-            APIclient.post('/login', {
-                user_name: data.username,
-                password: data.password
-            })
-                .then(function (response) {
-                    console.log(response.data);
-                    context.commit('setUserToken',response.data.access_token);
-                    context.commit('setUserRefreshToken',response.data.refresh_token);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    context.commit('setErrorMessage',{
-                        message: error
-                    });
+            if(data.username.length<3) {
+                context.commit('setErrorMessage',{
+                    message: "You must provide an username"
                 });
+            } else if(data.password<3) {
+                context.dispatch('dispatchErrorMessage',{
+                    message: "You must provide a password"
+                });
+            } else {
+                if(!constants.DEMO) {
+                    APIclient.post('/login', {
+                        user_name: data.username,
+                        password: data.password
+                    })
+                        .then(function (response) {
+                            console.log(response.data);
+                            context.commit('setUserToken', response.data.access_token);
+                            context.commit('setUserRefreshToken', response.data.refresh_token);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            context.dispatch('dispatchErrorMessage', {
+                                message: error
+                            });
+                        });
+                }else {
+                    context.commit('setUserToken',"token");
+                    context.commit('setUserRefreshToken', "refresh_token");
+                }
+            }
         },
         logoutUser(context) {
             //data.username
@@ -77,7 +103,7 @@ const store = new Vuex.Store({
                 })
                 .catch(function (error) {
                     console.log(error);
-                    context.commit('setErrorMessage',{
+                    context.dispatch('dispatchErrorMessage',{
                         message: error
                     });
                 });
@@ -90,7 +116,7 @@ const store = new Vuex.Store({
                 })
                 .catch(function (error) {
                     console.log(error);
-                    context.commit('setErrorMessage',error);
+                    context.dispatch('dispatchErrorMessage',error);
                 });
         },
         createUser(context, data) {
@@ -98,22 +124,45 @@ const store = new Vuex.Store({
             //data.email
             //data.password
             //data.name
-            APIclient.post('/user', {
-                user_name: data.user_name,
-                email: data.email,
-                password: data.password,
-                name: data.name,
-            })
-                .then(function (response) {
-                    console.log(response.data.message);
-                    context.commit('setSuccessMessage',response.data.message);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    context.commit('setErrorMessage',{
-                        message: error
-                    });
+            if(data.user_name.length<3) {
+                context.dispatch('dispatchErrorMessage',{
+                    message: "You must provide an username"
                 });
+            } else if(data.password<3) {
+                context.dispatch('dispatchErrorMessage',{
+                    message: "You must provide a password"
+                });
+            } else if(validateEmail(data.email)==false) {
+                context.dispatch('dispatchErrorMessage',{
+                    message: "You must provide a valid e-mail"
+                });
+            } else if(data.name<3) {
+                context.dispatch('dispatchErrorMessage',{
+                    message: "You must provide a name"
+                });
+            } else {
+                if(!constants.DEMO) {
+                    APIclient.post('/user', {
+                        user_name: data.user_name,
+                        email: data.email,
+                        password: data.password,
+                        name: data.name,
+                    })
+                        .then(function (response) {
+                            console.log(response.data.message);
+                            context.commit('setSuccessMessage', response.data.message);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            context.dispatch('dispatchErrorMessage', {
+                                message: error
+                            });
+                        });
+                } else {
+                    context.commit('setUserToken',"token");
+                    context.commit('setUserRefreshToken', "refresh_token");
+                }
+            }
         },
 
     }

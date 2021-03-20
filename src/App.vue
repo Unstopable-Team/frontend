@@ -12,10 +12,12 @@ export default {
   name: 'App',
   mounted() {
     let self = this;
-    setInterval(function(){
-      console.log("Refreshing notifications")
-      self.$store.dispatch('getNewData')
-    }, constants.NOTIFICATIONS_REFRESH_RATE * 1000);
+    if(constants.USE_WEBSOCKETS==false) {
+      setInterval(function () {
+        console.log("Refreshing notifications")
+        self.$store.dispatch('getNewData')
+      }, constants.NOTIFICATIONS_REFRESH_RATE * 1000);
+    }
   }
 }
 </script>

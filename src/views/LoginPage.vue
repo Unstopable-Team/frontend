@@ -23,7 +23,7 @@
           <label class="font-semibold text-sm text-gray-600 pb-1 block">Username</label>
           <input v-model="username" type="text" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
           <label class="font-semibold text-sm text-gray-600 pb-1 block">Password</label>
-          <input v-model="password" type="text" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
+          <input v-model="password" type="password" class="border rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full" />
 
           <div v-if="signup">
             <label class="font-semibold text-sm text-gray-600 pb-1 block">E-mail</label>
@@ -82,6 +82,9 @@ export default {
   computed: {
     errorMessage: function () {
       return this.$store.state.errorMessage;
+    },
+    userToken: function () {
+      return this.$store.state.userToken;
     }
   },
   methods: {
@@ -109,6 +112,13 @@ export default {
     toogleForm() {
       this.signup = !this.signup;
     }
+  },
+  watch: {
+    userToken: function (val) {
+      if (val != null) {
+        this.$router.push('/');
+      }
+    },
   }
 }
 </script>

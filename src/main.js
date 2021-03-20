@@ -1,4 +1,4 @@
-//import constants from "@/constants";
+import constants from "@/constants";
 
 import Vue from 'vue'
 import App from './App.vue'
@@ -26,21 +26,49 @@ import './assets/styles/index.css';
 //Pages
 import Homepage from "./views/HomePage";
 import LoginPage from './views/LoginPage.vue'
-/* SOCKETS IMPLEMENTATION
+
+ //SOCKETS IMPLEMENTATION
 
 //https://www.npmjs.com/package/vue-socket.io
-import VueSocketIO from 'vue-socket.io'
+//import VueSocketIO from 'vue-socket.io'
+import SocketIO from 'socket.io-client'
+if(constants.USE_WEBSOCKETS) {
 
-Vue.use(new VueSocketIO({
-  debug: true,
-  connection: constants.SOCKETIO_ENDPOINT,
-  vuex: {
-    store,
-    actionPrefix: 'SOCKET_',
-    mutationPrefix: 'SOCKET_'
-  },
-  options: { path: "/socket.io" } //Optional options
-}))*/
+  //localStorage.debug = '*';
+
+  const socketConnection = SocketIO(constants.SOCKETIO_ENDPOINT,{
+    path: "/socket.io"
+  });
+
+  socketConnection.on("connect", () => {
+    console.log("connected", socketConnection.id); // x8WIv7-mJelg7on_ALbx
+    socketConnection.emit("hello", "world");
+  });
+
+  socketConnection.on("data", (data) => {
+    console.log("received",data)
+  });
+
+  socketConnection.on("disconnect", () => {
+    console.log("disconnect", socketConnection.id); // x8WIv7-mJelg7on_ALbx
+
+  });
+
+  /*socketConnection.on('connect', function (msg) {
+    console.log("connected",msg);
+  })*/
+
+  /*Vue.use(new VueSocketIO({
+    debug: true,
+    connection: socketConnection,
+    vuex: {
+      store,
+      //actionPrefix: 'SOCKET_',
+      //mutationPrefix: 'SOCKET_'
+    },
+    //options: {path: "/forecast"} //Optional options
+  }))*/
+}
 
 Vue.use(VueRouter);
 Vue.use(TrendChart);
