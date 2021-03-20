@@ -64,6 +64,17 @@ import EventNotification from "@/components/EventNotification";
 
 export default {
   name: "Homepage",
+  sockets: {
+    connect: function () {
+      console.log('socket connected')
+    },
+    notification: function (data) {
+      console.log('Notification: ',data)
+    },
+    critical_notification: function (data) {
+      console.log('Critical Notification: ',data)
+    }
+  },
   computed: {
     currentPrice: function() {
       return 41.34
